@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 /**
  * @author yw
  * @version 1.0
- * @description TODO
+ * @description 统一拦截AutoFill注解的方法
  * @createTime 2024/10/17 14:46
  */
 @Aspect
@@ -40,7 +40,7 @@ public class AutoFillAspect {
      * 在切点为autoFillPointCut的方法执行之前自动调用此方法
      * 通过JoinPoint参数可以获取到方法执行时的动态信息，例如方法名、参数等
      */
-    @Before("autoFillPointCut()")
+    @Before("autoFillPointCut()") //通知，在匹配的切点方法执行前，先执行这个方法
     public void autoFill(JoinPoint joinPoint){
         log.info("开始进行公共字段自动填充...");
 
