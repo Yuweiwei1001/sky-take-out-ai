@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.ByteArrayInputStream;
 
 @Data
-@AllArgsConstructor
+@AllArgsConstructor //自动生成全参数构造函数，简化对象创建。
 @Slf4j
 public class AliOssUtil {
 
