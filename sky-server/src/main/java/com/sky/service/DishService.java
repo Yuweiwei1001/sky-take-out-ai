@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author yw
  * @version 1.0
- * @description TODO
+ * @description
  * @createTime 2024/10/17 17:22
  */
 public interface DishService {

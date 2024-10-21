@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author yw
  * @version 1.0
- * @description TODO
+ * @description 套餐菜品关联关系 Mapper
  * @createTime 2024/10/21 16:29
  */
 @Mapper

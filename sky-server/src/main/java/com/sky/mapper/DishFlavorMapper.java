@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @author yw
  * @version 1.0
- * @description TODO
+ * @description 菜品相关的口味mapper层
  * @createTime 2024/10/17 17:29
  */
 @Mapper
