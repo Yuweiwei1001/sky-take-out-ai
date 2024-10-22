@@ -6,6 +6,20 @@
         insert into dish (name, category_id, price, image, description, status, create_time, update_time, create_user, update_user)
         values (#{name},#{categoryId},#{price},#{image},#{description},#{status},#{createTime},#{updateTime},#{createUser},#{updateUser})
     </insert>
+    <update id="updateById">
+        update dish
+        <set>
+            <if test="name" >name=#{name},</if>
+            <if test="categoryId" >category_id=#{categoryId},</if>
+            <if test="price" >price=#{price},</if>
+            <if test="image" >image=#{image},</if>
+            <if test="description" >description=#{description},</if>
+            <if test="status" >status=#{status},</if>
+            <if test="updateTime" >update_time=#{updateTime},</if>
+            <if test="updateUser" >update_user=#{updateUser},</if>
+        </set>
+        where id = #{id}
+    </update>
     <delete id="deleteByIds">
         delete from dish where id in
         <foreach collection="ids" item="id" open="(" separator="," close=")">
