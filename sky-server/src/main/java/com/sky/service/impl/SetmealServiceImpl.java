@@ -25,7 +25,7 @@ import java.util.List;
  * @createTime 2024/10/25 17:24
  */
 @Service
-public class SetmealServiceImpl implements SetmealService {
+public class SetmealServiceImpl implements SetmealService{
 
     @Autowired
     private SetmealMapper setmealMapper;
@@ -41,7 +41,7 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Override
     @Transactional
-    public void save(SetmealDTO setmealDTO) {
+    public void saveWithDish(SetmealDTO setmealDTO) {
         Setmeal setmeal = new Setmeal();
         BeanUtils.copyProperties(setmealDTO,setmeal);
         //保存套餐基本数据
@@ -55,5 +55,24 @@ public class SetmealServiceImpl implements SetmealService {
             //批量插入套餐菜品数据
             setmealDishMapper.insertBatch(setmealDishes);
         }
+    }
+
+    @Override
+    public SetmealVO getByIdWithDish(Long id) {
+        Setmeal setmeal = setmealMapper.getById(id);
+        List<SetmealDish> setmealDishes = setmealDishMapper.getBySetmealId(id);
+        SetmealVO setmealVO = new SetmealVO();
+        BeanUtils.copyProperties(setmeal,setmealVO);
+        setmealVO.setSetmealDishes(setmealDishes);
+        return setmealVO;
+    }
+
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Setmeal setmeal = Setmeal.builder()
+                .id(id)
+                .status(status)
+                .build();
+        setmealMapper.updateById(setmeal);
     }
 }

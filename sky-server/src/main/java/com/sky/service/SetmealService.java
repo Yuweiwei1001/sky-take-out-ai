@@ -3,6 +3,7 @@ package com.sky.service;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.result.PageResult;
+import com.sky.vo.SetmealVO;
 
 /**
  * @author yw
@@ -13,5 +14,9 @@ import com.sky.result.PageResult;
 public interface SetmealService {
     PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
 
-    void save(SetmealDTO setmealDTO);
+    void saveWithDish(SetmealDTO setmealDTO);
+
+    SetmealVO getByIdWithDish(Long id);
+
+    void startOrStop(Integer status, Long id);
 }
