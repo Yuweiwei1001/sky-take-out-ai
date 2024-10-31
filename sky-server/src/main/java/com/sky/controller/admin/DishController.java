@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author yw
  * @version 1.0
- * @description TODO
+ * @description 菜品管理
  * @createTime 2024/10/17 17:21
  */
 @RestController
@@ -29,6 +29,7 @@ public class DishController {
     private DishService dishService;
 
     @PostMapping
+    @ApiOperation("新增菜品")
     public Result save(@RequestBody DishDTO dishDTO){
         log.info("新增菜品，菜品数据：{}",dishDTO);
         dishService.saveWithFlavor(dishDTO);
@@ -72,5 +73,12 @@ public class DishController {
         log.info("启用禁用菜品：{},{}",status,id);
         dishService.startOrStop(status,id);
         return Result.success();
+    }
+
+    @GetMapping("/list")
+    @ApiOperation("根据分类id查询菜品")
+    public Result<List<DishVO>> list(Long categoryId){
+        log.info("根据分类id查询菜品：{}",categoryId);
+        return Result.success(dishService.list(categoryId));
     }
 }

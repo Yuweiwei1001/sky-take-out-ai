@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.SetmealMapper">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO setmeal (name, category_id, price, status, description, image, create_time, update_time, create_user, update_user)
+        VALUES (#{name},#{categoryId},#{price},#{status},#{description},#{image},#{createTime},#{updateTime},#{createUser},#{updateUser})
+    </insert>
+    <!--namespace根据自己需要创建的的mapper的路径和名称填写-->
+    <select id="pageQuery" resultType="com.sky.vo.SetmealVO">
+        SELECT s.*, c.name AS categoryName
+        FROM setmeal s
+        LEFT JOIN category c ON s.category_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                AND s.name like concat('%',#{name},'%')
+            </if>
+            <if test="categoryId != null">
+                AND s.category_id = #{categoryId}
+            </if>
+            <if test="status != null">
+                AND s.status = #{status}
+            </if>
+        </where>
+    </select>
+</mapper>
