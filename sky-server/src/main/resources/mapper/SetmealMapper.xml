@@ -20,6 +20,13 @@
                 id = #{id}
             </where>
     </update>
+    <delete id="deleteByIds">
+        delete from setmeal where id in
+        <foreach collection="ids" item = "id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
     <select id="pageQuery" resultType="com.sky.vo.SetmealVO">
         SELECT s.*, c.name AS categoryName
         FROM setmeal s

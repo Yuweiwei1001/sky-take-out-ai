@@ -92,7 +92,6 @@ public class SetmealServiceImpl implements SetmealService{
 
     @Override
     @Transactional
-    //TODO 删除套餐具体实现
     public void deleteByIds(List<Long> ids) {
         //套餐是否停售
         for (Long id : ids) {
@@ -101,7 +100,8 @@ public class SetmealServiceImpl implements SetmealService{
                 throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
         }
         //删除套餐
-
+        setmealMapper.deleteByIds(ids);
         //删除套餐和菜品的关联数据
+        setmealDishMapper.deleteBySetmealIds(ids);
     }
 }
