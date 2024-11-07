@@ -5,10 +5,12 @@ import com.sky.dto.SetmealPageQueryDTO;
 import com.sky.result.PageResult;
 import com.sky.vo.SetmealVO;
 
+import java.util.List;
+
 /**
  * @author yw
  * @version 1.0
- * @description TODO
+ * @description
  * @createTime 2024/10/25 17:24
  */
 public interface SetmealService {
@@ -19,4 +21,6 @@ public interface SetmealService {
     SetmealVO getByIdWithDish(Long id);
 
     void startOrStop(Integer status, Long id);
+
+    void deleteByIds(List<Long> ids);
 }

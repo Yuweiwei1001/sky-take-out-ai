@@ -2,10 +2,15 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Dish;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
+import com.sky.exception.DeletionNotAllowedException;
+import com.sky.exception.SetmealEnableFailedException;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
@@ -68,11 +73,35 @@ public class SetmealServiceImpl implements SetmealService{
     }
 
     @Override
-    public void startOrStop(Integer status, Long id) {
+    @Transactional
+    public void startOrStop(Integer status, Long SetmealId) {
+        //根据套餐id查询出套餐中的菜品，检查其状态，套餐含未起售菜品则不能起售
+        List<Dish> dishes = setmealDishMapper.getDishesBySetmealId(SetmealId);
+        for (Dish dish : dishes) {
+            if(dish.getStatus()== StatusConstant.DISABLE){
+                throw new SetmealEnableFailedException(MessageConstant.SETMEAL_ENABLE_FAILED);
+            }
+        }
+        //更新套餐状态
         Setmeal setmeal = Setmeal.builder()
-                .id(id)
+                .id(SetmealId)
                 .status(status)
                 .build();
         setmealMapper.updateById(setmeal);
+    }
+
+    @Override
+    @Transactional
+    //TODO 删除套餐具体实现
+    public void deleteByIds(List<Long> ids) {
+        //套餐是否停售
+        for (Long id : ids) {
+            Setmeal setmeal = setmealMapper.getById(id);
+            if(setmeal.getStatus()== StatusConstant.ENABLE)
+                throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ON_SALE);
+        }
+        //删除套餐
+
+        //删除套餐和菜品的关联数据
     }
 }

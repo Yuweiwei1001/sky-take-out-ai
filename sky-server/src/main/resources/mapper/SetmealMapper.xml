@@ -16,6 +16,9 @@
             <if test="image != null">image = #{image},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
         </set>
+            <where>
+                id = #{id}
+            </where>
     </update>
     <select id="pageQuery" resultType="com.sky.vo.SetmealVO">
         SELECT s.*, c.name AS categoryName
