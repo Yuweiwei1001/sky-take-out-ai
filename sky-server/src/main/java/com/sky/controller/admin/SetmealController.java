@@ -23,7 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/setmeal")
 @Slf4j
-@Api
+@Api(tags = "套餐相关接口")
 public class SetmealController {
 
     @Autowired
@@ -68,5 +68,14 @@ public class SetmealController {
         setmealService.deleteByIds(ids);
         return Result.success();
     }
+
+    @PutMapping
+    @ApiOperation("修改套餐")
+    public Result update(@RequestBody SetmealDTO setmealDTO){
+        log.info("修改套餐，参数：{}",setmealDTO);
+        setmealService.updateWithDish(setmealDTO);
+        return Result.success();
+    }
+
 
 }

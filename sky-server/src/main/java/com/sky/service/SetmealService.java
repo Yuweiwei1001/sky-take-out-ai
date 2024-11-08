@@ -23,4 +23,6 @@ public interface SetmealService {
     void startOrStop(Integer status, Long id);
 
     void deleteByIds(List<Long> ids);
+
+    void updateWithDish(SetmealDTO setmealDTO);
 }
