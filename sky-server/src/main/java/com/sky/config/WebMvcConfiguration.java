@@ -23,6 +23,8 @@ import java.util.List;
 
 /**
  * 配置类，注册web层相关组件
+ * 用于配置 Spring MVC 的一个重要的支持类。它提供了许多方法来定制 Spring MVC 的行为,例如：
+ * 配置视图解析器、配置消息转换器、注册拦截器等。
  */
 @Configuration
 @Slf4j
