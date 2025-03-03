@@ -22,4 +22,8 @@
 
     </select>
 
+    <!-- 根据ShoppingCart cart删除数据-->
+    <delete id="deleteById">
+        delete from shopping_cart where id = #{id}
+    </delete>
 </mapper>

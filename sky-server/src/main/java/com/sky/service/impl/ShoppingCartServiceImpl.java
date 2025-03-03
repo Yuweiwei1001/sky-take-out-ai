@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -82,5 +83,33 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
                 .build();
         List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
         return list;
+    }
+
+    @Override
+    public void cleanShoppingCart() {
+        Long userId = BaseContext.getCurrentId();
+        shoppingCartMapper.deleteByUserId(userId);
+    }
+
+    @Override
+    @Transactional
+    public void subShoppingCart(ShoppingCartDTO shoppingCartDTO) {
+        //查找购物车，查看要删除菜品/套餐的数量
+        ShoppingCart shoppingCart = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO,shoppingCart);
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+        //只能查出一条数据
+        if (list != null && list.size()>0 ){
+            ShoppingCart cart = list.get(0);
+            if(cart.getNumber() == 1){//如果要删除的菜品数量为1，则直接删除该菜品
+                Long id= cart.getId();
+                shoppingCartMapper.deleteById(id);
+            }
+            else{
+                cart.setNumber(cart.getNumber()-1);
+                shoppingCartMapper.updateNumberById(cart);
+            }
+        }
     }
 }
