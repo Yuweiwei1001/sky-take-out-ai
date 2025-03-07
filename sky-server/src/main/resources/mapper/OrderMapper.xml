@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.OrderMapper">
+    <!--namespace根据自己需要创建的的mapper的路径和名称填写-->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into orders ( user_id, address_book_id, number, status, pay_method, amount, pay_status,
+                            estimated_delivery_time,order_time,delivery_status, remark,  phone, address,
+                            consignee, checkout_time,pack_amount,tableware_number,tableware_status)
+        values (#{userId},#{addressBookId},#{number},#{status},#{payMethod},#{amount},#{payStatus},
+                #{estimatedDeliveryTime},#{orderTime},#{deliveryStatus},#{remark},#{phone},#{address},
+                #{consignee},#{checkoutTime},#{packAmount},#{tablewareNumber},#{tablewareStatus})
+    </insert>
+
+    <update id="update" parameterType="com.sky.entity.Orders">
+        update orders
+        <set>
+            <if test="cancelReason != null and cancelReason!='' ">
+                cancel_reason=#{cancelReason},
+            </if>
+            <if test="rejectionReason != null and rejectionReason!='' ">
+                rejection_reason=#{rejectionReason},
+            </if>
+            <if test="cancelTime != null">
+                cancel_time=#{cancelTime},
+            </if>
+            <if test="payStatus != null">
+                pay_status=#{payStatus},
+            </if>
+            <if test="payMethod != null">
+                pay_method=#{payMethod},
+            </if>
+            <if test="checkoutTime != null">
+                checkout_time=#{checkoutTime},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="deliveryTime != null">
+                delivery_time = #{deliveryTime}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="pageQuery" resultType="Orders">
+        select * from orders
+        <where>
+            <if test="number != null and number!=''">
+                and number like concat('%',#{number},'%')
+            </if>
+            <if test="phone != null and phone!=''">
+                and phone like concat('%',#{phone},'%')
+            </if>
+            <if test="userId != null">
+                and user_id = #{userId}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="beginTime != null">
+                and order_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and order_time &lt;= #{endTime}
+            </if>
+        </where>
+        order by order_time desc
+    </select>
+</mapper>
