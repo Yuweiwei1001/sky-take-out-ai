@@ -11,6 +11,7 @@ import com.sky.vo.UserLoginVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/user/user")
-@Api(tags = "C端用户相关接口")
+@Api(tags = "C端-用户接口")
 @Slf4j
 public class UserController {
 
@@ -36,7 +37,7 @@ public class UserController {
     @Autowired
     private JwtProperties jwtProperties;
 
-    @RequestMapping("/login")
+    @PostMapping("/login")
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
         log.info("用户登录：{}", userLoginDTO.getCode());
 
