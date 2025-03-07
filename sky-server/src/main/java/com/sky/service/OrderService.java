@@ -36,4 +36,8 @@ public interface OrderService {
     PageResult pageQuery4User(OrdersPageQueryDTO ordersPageQueryDTO);
 
     OrderVO details(Long id);
+
+    void cancel(Long id) throws Exception;
+
+    void repetition(Long id);
 }
