@@ -73,7 +73,7 @@ public class OrderController {
     @ApiOperation("取消订单")
     public Result cancel(@PathVariable("id") Long id) throws Exception{
         log.info("取消订单id：{}",id);
-        orderService.cancel(id);
+        orderService.cancel4User(id);
         return Result.success();
     }
 
