@@ -57,4 +57,6 @@ public interface OrderMapper {
      * @return
      */
     Double getTurnoverSumByDate(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
+
+    Integer countByDate(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
 }
