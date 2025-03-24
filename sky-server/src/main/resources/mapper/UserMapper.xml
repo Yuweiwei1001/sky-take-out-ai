@@ -5,5 +5,16 @@
         INSERT INTO user (id_number, name, phone, sex, avatar, openid,create_time)
         VALUES (#{idNumber},#{name},#{phone},#{sex},#{avatar},#{openid},#{createTime})
     </insert>
+    <select id="countByDate" resultType="java.lang.Integer">
+        SELECT COUNT(id) FROM user
+        <where>
+            <if test="beginTime != null">
+                and create_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+        </where>
+    </select>
 
 </mapper>
