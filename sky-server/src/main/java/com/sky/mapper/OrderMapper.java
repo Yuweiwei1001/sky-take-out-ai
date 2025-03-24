@@ -49,4 +49,12 @@ public interface OrderMapper {
 
     @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
     List<Orders> getByStatusAndOrderTimeOut(Integer status, LocalDateTime orderTime);
+
+    /**
+     * @param beginTime
+     * @param endTime
+     * @param status
+     * @return
+     */
+    Double getTurnoverSumByDate(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
 }

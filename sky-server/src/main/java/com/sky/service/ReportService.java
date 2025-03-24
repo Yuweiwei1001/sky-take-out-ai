@@ -1,0 +1,16 @@
+package com.sky.service;
+
+import com.sky.vo.TurnoverReportVO;
+
+import java.time.LocalDate;
+
+/**
+ * @author yw
+ * @version 1.0
+ * @description
+ * @createTime 2025/3/24 11:23
+ */
+public interface ReportService {
+
+    TurnoverReportVO getTurnoverReport(LocalDate begin, LocalDate end);
+}
