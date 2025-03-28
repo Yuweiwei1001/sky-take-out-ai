@@ -112,5 +112,13 @@
         ORDER BY number DESC
         LIMIT 10
     </select>
+    <select id="countByStatus" resultType="java.lang.Integer">
+        select count(id) from orders
+        <where>
+            <if test="status != null">
+                status = #{status}
+            </if>
+        </where>
+    </select>
 
 </mapper>

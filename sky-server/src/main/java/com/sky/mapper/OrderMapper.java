@@ -46,20 +46,31 @@ public interface OrderMapper {
     @Select("select * from orders where id = #{id}")
     Orders getById(Long id);
 
-    @Select("select count(id) from orders where status = #{status}")
-    Integer countByStatus(Integer toBeConfirmed);
+    /**
+     * 根据订单状态统计订单数量
+     * @param status
+     * @return
+     */
 
+    Integer countByStatus(Integer status);
+
+    /**
+     * 根据时间范围和订单状态查询订单
+     * @param status
+     * @param orderTime
+     * @return
+     */
     @Select("select * from orders where status = #{status} and order_time < #{orderTime}")
     List<Orders> getByStatusAndOrderTimeOut(Integer status, LocalDateTime orderTime);
 
     /**
-     * @param beginTime
-     * @param endTime
-     * @param status
-     * @return
+     * 根据时间范围和订单状态查询营业额
      */
     Double getTurnoverSumByDate(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
 
+    /**
+     * 根据时间范围和订单状态查询订单数量
+     */
     Integer countByDate(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
 
     List<GoodsSalesDTO> getSalesTop10(LocalDateTime beginTime, LocalDateTime endTime);
