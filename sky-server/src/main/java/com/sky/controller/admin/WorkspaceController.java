@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+
 /**
  * @author yw
  * @version 1.0
@@ -32,7 +35,12 @@ public class WorkspaceController {
      */
     @GetMapping("/businessData")
     public Result<BusinessDataVO> getBusinessData(){
-        return Result.success(workspaceService.getBusinessData());
+        //获得当天的开始时间
+        LocalDateTime begin = LocalDateTime.now().with(LocalTime.MIN);
+        //获得当天的结束时间
+        LocalDateTime end = LocalDateTime.now().with(LocalTime.MAX);
+
+        return Result.success(workspaceService.getBusinessData(begin, end));
     }
 
     /**

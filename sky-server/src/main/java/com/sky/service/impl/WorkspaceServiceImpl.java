@@ -39,10 +39,8 @@ public class WorkspaceServiceImpl implements WorkspaceService {
     private SetmealMapper setmealMapper;
 
     @Override
-    public BusinessDataVO getBusinessData() {
+    public BusinessDataVO getBusinessData(LocalDateTime beginTime, LocalDateTime endTime) {
         LocalDate date = LocalDate.now();
-        LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
-        LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
         //查询今日营业额
         Double turnover = orderMapper.getTurnoverSumByDate(beginTime, endTime, Orders.COMPLETED);
         turnover = turnover == null ? 0.0 : turnover;
