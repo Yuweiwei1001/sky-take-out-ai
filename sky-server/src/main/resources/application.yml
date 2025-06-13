@@ -21,7 +21,7 @@ spring:
       timeout: ${sky.redis.timeout}
   ai:
     dashscope:
-      api-key: sk-fe46b292c6e446b28cc62729b8c5d325
+      api-key: ${sky.dashscope.api-key}
 mybatis:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml
