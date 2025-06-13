@@ -10,6 +10,7 @@ import com.sky.mapper.UserMapper;
 import com.sky.properties.WeChatProperties;
 import com.sky.service.UserService;
 import com.sky.utils.HttpClientUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.Map;
  * @createTime 2025/1/6 16:24
  */
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
 
@@ -38,6 +40,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     @Override
     public User wxLogin(UserLoginDTO userLoginDTO) {
+        log.info("微信用户登录：{}", userLoginDTO.getCode());
         //获取用户的openid
         String json = getOpenid(userLoginDTO);
 

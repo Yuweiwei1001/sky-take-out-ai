@@ -27,7 +27,7 @@ public class OrderTask {
      * 处理超时订单
      * 每分钟执行一次
      */
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0/15 * * * ?")
     public void processTimeOutOrder(){
         log.info("处理超时订单,{}", LocalDateTime.now());
         // 当前时间减15分钟，查找订单时间在当前时间之前15分钟且未支付的订单
