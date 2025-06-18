@@ -31,6 +31,7 @@ node14需自行下载，建议使用nvm，方便进行node版本管理
     1. 在项目目录右键选择 "Git Bash Here"或在 VS Code 终端中选择 Git Bash
     2. 输入命令，注：要在项目根目录下运行此命令   
 `chmod +x install-deps.sh  
+
 ./install-deps.sh`
 3. 终端输入命令 npm run serve 启动前端项目
 4. 如何没有意外，项目应该正常启动，前端地址[http://localhost:8888/](http://localhost:8888/)
