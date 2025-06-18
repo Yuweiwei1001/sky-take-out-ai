@@ -4,10 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author yw
@@ -18,35 +16,29 @@ import java.util.Map;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Slf4j
 public class OrderTableResponse {
     private String type = "order_table";
     private String title;
     private PageResult pageResult;
-    private List<String> actions;
-    private Map<String, Object> metadata;
-
     // 自定义构造器
-    public OrderTableResponse(String title, PageResult pageResult, List<String> actions) {
+    public OrderTableResponse(String title, PageResult pageResult){
         this.type = "order_table";
         this.title = title;
         this.pageResult = pageResult;
-        this.actions = actions;
-        this.metadata = new HashMap<>();
+
     }
 
-    public void addMetadata(String key, Object value) {
-        if (this.metadata == null) {
-            this.metadata = new HashMap<>();
-        }
-        this.metadata.put(key, value);
-    }
 
     @Override
     public String toString() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.writeValueAsString(this);
+            String json = mapper.writeValueAsString(this);
+            log.info("OrderTableResponse转换为JSON：{}", json);
+            return json;
         } catch (Exception e) {
+            log.error("JSON序列化失败：", e);
             return String.format("{\"type\":\"order_table\",\"title\":\"%s\",\"recordCount\":%d}",
                     title,
                     pageResult != null && pageResult.getRecords() != null ? pageResult.getRecords().size() : 0);

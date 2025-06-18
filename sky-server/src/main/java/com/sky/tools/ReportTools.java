@@ -25,7 +25,7 @@ import java.time.format.DateTimeParseException;
 public class ReportTools {
 
 
-    private final ReportService reportService; // 你的实际服务
+    private final ReportService reportService;
 
     /**
      * 获取今日营业数据
@@ -33,7 +33,7 @@ public class ReportTools {
     /**
      * 获取今日营业数据
      */
-    @Tool(description = "获取今日的营业数据，包括营业额、订单数量等关键指标")
+    @Tool(description = "获取今日的营业数据，包括营业额")
     public TurnoverReportVO getTodayTurnoverReport() {
         LocalDate today = LocalDate.now();
         return reportService.getTurnoverReport(today, today);

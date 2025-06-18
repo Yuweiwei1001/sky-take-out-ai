@@ -26,39 +26,12 @@ public class OrderTools {
     private final OrderService orderService;
 
     /**
-     * 获取待接单的订单列表 - 返回结构化数据
-     */
-    @Tool(description = "获取当前所有待接单的订单，返回表格数据供前端展示和操作")
-    public OrderTableResponse getPendingOrdersForTable() {
-        OrdersPageQueryDTO queryDTO = new OrdersPageQueryDTO();
-        queryDTO.setPage(1);
-        queryDTO.setPageSize(20);
-        queryDTO.setStatus(2); // 待接单状态
-
-        PageResult pageResult = orderService.pageQuery4Admin(queryDTO);
-
-        OrderTableResponse response = new OrderTableResponse(
-                "待接单订单列表",
-                pageResult,
-                Arrays.asList("accept", "reject", "view")
-        );
-
-        // 添加额外信息
-        response.addMetadata("statusCode", 2);
-        response.addMetadata("statusName", "待接单");
-        response.addMetadata("canAccept", true);
-        response.addMetadata("canReject", true);
-
-        return response;
-    }
-
-    /**
      * 根据状态获取订单表格数据
      */
     @Tool(description = "根据订单状态获取订单列表，返回可操作的表格数据")
     public OrderTableResponse getOrdersTableByStatus(
             @JsonProperty("status")
-            @JsonPropertyDescription("订单状态：1-待付款，2-待接单，3-已接单，4-派送中，5-已完成，6-已取消")
+            @JsonPropertyDescription("订单状态：1-待付款，2-待接单，3-已接单/待派送，4-派送中，5-已完成，6-已取消")
             Integer status) {
 
         OrdersPageQueryDTO queryDTO = new OrdersPageQueryDTO();
@@ -70,12 +43,9 @@ public class OrderTools {
 
         OrderTableResponse response = new OrderTableResponse(
                 getStatusTitle(status),
-                pageResult,
-                getActionsByStatus(status)
+                pageResult
         );
 
-        response.addMetadata("statusCode", status);
-        response.addMetadata("statusName", getStatusName(status));
 
         return response;
     }
@@ -92,24 +62,25 @@ public class OrderTools {
         }
     }
 
-    private String getStatusName(Integer status) {
-        switch (status) {
-            case 1: return "待付款";
-            case 2: return "待接单";
-            case 3: return "已接单";
-            case 4: return "派送中";
-            case 5: return "已完成";
-            case 6: return "已取消";
-            default: return "未知状态";
-        }
-    }
 
-    private List<String> getActionsByStatus(Integer status) {
-        switch (status) {
-            case 2: return Arrays.asList("accept", "reject", "view"); // 待接单
-            case 3: return Arrays.asList("deliver", "cancel", "view"); // 已接单
-            case 4: return Arrays.asList("complete", "view"); // 派送中
-            default: return Arrays.asList("view"); // 其他状态只能查看
-        }
-    }
+    /**
+     * 获取待接单的订单列表 - 返回结构化数据
+     */
+//    @Tool(description = "获取当前所有待接单的订单，返回表格数据供前端展示和操作")
+//    public OrderTableResponse getPendingOrdersForTable() {
+//        OrdersPageQueryDTO queryDTO = new OrdersPageQueryDTO();
+//        queryDTO.setPage(1);
+//        queryDTO.setPageSize(20);
+//        queryDTO.setStatus(2); // 待接单状态
+//
+//        PageResult pageResult = orderService.pageQuery4Admin(queryDTO);
+//
+//        OrderTableResponse response = new OrderTableResponse(
+//                "待接单订单列表",
+//                pageResult
+//        );
+//
+//        return response;
+//    }
+
 }

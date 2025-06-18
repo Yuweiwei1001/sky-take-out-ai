@@ -9,6 +9,8 @@ import com.sky.result.OrderTableResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.QuestionAnswerAdvisor;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 
@@ -30,6 +32,7 @@ public class AIChatServiceImpl implements AIChatService {
 
 
     private final ChatClient chatClient;
+
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 

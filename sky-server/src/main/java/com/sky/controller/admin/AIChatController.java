@@ -40,6 +40,7 @@ public class AIChatController {
         return aiChatService.chat(aiChatMessageDTO);
     }
 
+    // todo 暂未使用
     @PostMapping(value = "/chatStream")
     @ApiOperation("流式输出")
     public Flux<String> chatSteam(@RequestBody AIChatMessageDTO aiChatMessageDTO) {

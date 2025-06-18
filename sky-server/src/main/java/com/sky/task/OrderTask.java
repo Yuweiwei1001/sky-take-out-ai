@@ -53,7 +53,6 @@ public class OrderTask {
      */
     @Scheduled(cron = "* * 1 * * ?")
     public void processDeliveryOrder(){
-        //TODO 处理派送中订单
         log.info("处理派送中订单,{}", LocalDateTime.now());
         // 查询待派送订单，订单状态为“派送中”且下单时间在当前时间之前24小时
         // 将订单状态修改为“完成”
