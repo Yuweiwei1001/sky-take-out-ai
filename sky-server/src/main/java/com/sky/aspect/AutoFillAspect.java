@@ -61,15 +61,25 @@ public class AutoFillAspect {
         if(operationType == OperationType.INSERT){
             try {
                 Method setCreateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_TIME, LocalDateTime.class);
-                Method setCreateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);
+//                Method setCreateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_CREATE_USER, Long.class);
+//                setCreateUser.invoke(entity,currentId);
+                if (hasField(entity.getClass(), "createUser")) {
+                    Method setCreateUser = entity.getClass().getDeclaredMethod("setCreateUser", Long.class);
+                    setCreateUser.invoke(entity, currentId);
+                }
                 Method setUpdateTime = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_TIME, LocalDateTime.class);
-                Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
-
+//                Method setUpdateUser = entity.getClass().getDeclaredMethod(AutoFillConstant.SET_UPDATE_USER, Long.class);
+//                setUpdateUser.invoke(entity,currentId);
+                // 检查实体类是否存在 updateUser 字段，如果存在则设置值
+                if (hasField(entity.getClass(), "updateUser")) {
+                    Method setUpdateUser = entity.getClass().getDeclaredMethod("setUpdateUser", Long.class);
+                    setUpdateUser.invoke(entity, currentId);
+                }
                 //通过反射为对象属性赋值
                 setCreateTime.invoke(entity,now);
-                setCreateUser.invoke(entity,currentId);
+
                 setUpdateTime.invoke(entity,now);
-                setUpdateUser.invoke(entity,currentId);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -88,4 +98,16 @@ public class AutoFillAspect {
         }
 
     }
+    /**
+     * 检查类是否包含指定名称的字段
+     */
+    private boolean hasField(Class<?> clazz, String fieldName) {
+        try {
+            clazz.getDeclaredField(fieldName);
+            return true;
+        } catch (NoSuchFieldException e) {
+            return false;
+        }
+    }
+
 }

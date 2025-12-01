@@ -1,9 +1,12 @@
 package com.sky.service;
 
 import com.sky.dto.AIChatMessageDTO;
+import com.sky.entity.Conversation;
 import com.sky.result.AIResponse;
 import com.sky.vo.AIChatResponseVO;
 import reactor.core.publisher.Flux;
+
+import java.util.List;
 
 /**
  * @author yw
@@ -13,7 +16,8 @@ import reactor.core.publisher.Flux;
  */
 public interface AIChatService {
 
-    AIResponse chat(AIChatMessageDTO aiChatMessageDTO);
+    AIChatResponseVO chat(AIChatMessageDTO aiChatMessageDTO);
 
     Flux<String> chatSteam(AIChatMessageDTO aiChatMessageDTO);
+
 }

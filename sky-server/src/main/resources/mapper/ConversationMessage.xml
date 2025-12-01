@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.ConversationMessageMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into conversation_message (id, conversation_id, content, sender_type, send_time)
+        VALUES (#{id}, #{conversationId}, #{content}, #{senderType}, #{sendTime})
+    </insert>
+    <select id="getByConversationId" resultType="com.sky.entity.ConversationMessage">
+        select * from conversation_message where conversation_id = #{conversationId} order by send_time ASC
+    </select>
+
+</mapper>

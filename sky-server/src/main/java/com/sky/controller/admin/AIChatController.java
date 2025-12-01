@@ -1,10 +1,13 @@
 package com.sky.controller.admin;
 
 import com.sky.dto.AIChatMessageDTO;
+import com.sky.entity.Conversation;
 import com.sky.result.AIResponse;
 import com.sky.result.Result;
 import com.sky.service.AIChatService;
+import com.sky.service.ConversationService;
 import com.sky.vo.AIChatResponseVO;
+import com.sky.vo.ConversationVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -33,18 +37,36 @@ public class AIChatController {
 
     private final AIChatService aiChatService;
 
+    private final ConversationService conversationService;
+
+
     @PostMapping(value = "/chat")
     @ApiOperation("ai聊天")
-    public AIResponse chat(@RequestBody AIChatMessageDTO aiChatMessageDTO) {
+    public AIResponse<AIChatResponseVO> chat(@RequestBody AIChatMessageDTO aiChatMessageDTO) {
         log.info("用户输入：{}", aiChatMessageDTO);
-        return aiChatService.chat(aiChatMessageDTO);
+        return AIResponse.success(aiChatService.chat(aiChatMessageDTO));
     }
 
-    // todo 暂未使用
-    @PostMapping(value = "/chatStream")
-    @ApiOperation("流式输出")
-    public Flux<String> chatSteam(@RequestBody AIChatMessageDTO aiChatMessageDTO) {
-        log.info("用户输入：{}", aiChatMessageDTO);
-        return aiChatService.chatSteam(aiChatMessageDTO);
+
+    @GetMapping(value = "/conversation/list")
+    public Result<List<Conversation>> getConversationList(){
+        log.info("获取会话历史列表");
+        return Result.success(conversationService.getConversationList());
     }
+
+
+
+    @GetMapping(value = "/history")
+    public Result<ConversationVO> getConversationHistory(@RequestParam String conversationId) {
+        log.info("获取用户的会话历史,会话id：{}", conversationId);
+        return Result.success(conversationService.getConversationHistory(conversationId));
+    }
+
+    // 暂未使用
+//    @PostMapping(value = "/chatStream")
+//    @ApiOperation("流式输出")
+//    public Flux<String> chatSteam(@RequestBody AIChatMessageDTO aiChatMessageDTO) {
+//        log.info("用户输入：{}", aiChatMessageDTO);
+//        return aiChatService.chatSteam(aiChatMessageDTO);
+//    }
 }

@@ -1,8 +1,11 @@
 package com.sky.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 /**
  * @author yw
@@ -16,7 +19,10 @@ public class AIChatMessageDTO {
     @ApiModelProperty(value = "用户消息内容", required = true)
     private String message;
 
-    @ApiModelProperty(value = "对话ID", required = true)
+    @ApiModelProperty(value = "对话ID")
     private String conversationId;
+
+    @ApiModelProperty(value = "发送时间")
+    private String sendTime;
 
 }

@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.time.LocalDateTime;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,11 +17,11 @@ import io.swagger.annotations.ApiModelProperty;
 public class AIChatResponseVO {
 
     @ApiModelProperty(value = "AI回复内容", required = true)
-    private String reply;
+    private String content;
 
     @ApiModelProperty(value = "对话ID", required = true)
     private String conversationId;
 
-    @ApiModelProperty(value = "响应时间戳", required = true)
-    private Long timestamp;
+    @ApiModelProperty(value = "回复时间", required = true)
+    private LocalDateTime replyTime;
 }

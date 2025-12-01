@@ -9,29 +9,26 @@ import lombok.Data;
  * @createTime 2025/6/13 15:25
  */
 @Data
-public class AIResponse {
+public class AIResponse<T> {
     private Integer code;
     private String msg;
-    private Object data;
-    private String type; // 响应类型：text, table, chart 等
-    private String conversationId;
+    private T data;
+    private String type;
     private Long timestamp;
 
-    public static AIResponse success(Object data, String type) {
-        AIResponse response = new AIResponse();
+    public static <T> AIResponse<T> success(T data) {
+        AIResponse<T> response = new AIResponse<>();
         response.setCode(1);
         response.setData(data);
-        response.setType(type);
         response.setTimestamp(System.currentTimeMillis());
         return response;
     }
 
-    public static AIResponse error(String message) {
-        AIResponse response = new AIResponse();
+    public static <T> AIResponse<T> error(String message) {
+        AIResponse<T> response = new AIResponse<>();
         response.setCode(0);
         response.setMsg(message);
         response.setTimestamp(System.currentTimeMillis());
         return response;
     }
-
 }

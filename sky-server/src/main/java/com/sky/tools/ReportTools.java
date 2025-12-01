@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 import com.sky.service.ReportService;
 import com.sky.vo.TurnoverReportVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ import java.time.format.DateTimeParseException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class ReportTools {
 
 
@@ -40,29 +42,6 @@ public class ReportTools {
     }
 
     /**
-     * 获取指定日期范围的营业数据
-     */
-    @Tool(description ="获取指定时间范围内的营业数据，需要提供开始日期和结束日期")
-    public TurnoverReportVO getTurnoverReportByDateRange(
-            @JsonProperty("startDate")
-            @JsonPropertyDescription("开始日期，格式：yyyy-MM-dd，例如：2025-01-01")
-            String startDate,
-
-            @JsonProperty("endDate")
-            @JsonPropertyDescription("结束日期，格式：yyyy-MM-dd，例如：2025-01-31")
-            String endDate) {
-
-        try {
-            LocalDate begin = LocalDate.parse(startDate);
-            LocalDate end = LocalDate.parse(endDate);
-
-            return reportService.getTurnoverReport(begin, end);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("日期格式错误，请使用 yyyy-MM-dd 格式");
-        }
-    }
-
-    /**
      * 获取最近N天的营业数据
      */
     @Tool(description ="获取最近几天的营业数据汇总")
@@ -70,7 +49,7 @@ public class ReportTools {
             @JsonProperty("days")
             @JsonPropertyDescription("最近的天数，例如：7表示最近7天")
             int days) {
-
+        log.info("获取最近{}天的营业额数据", days);
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(days - 1);
 
@@ -113,7 +92,7 @@ public class ReportTools {
     /**
      * 获取本年度营业数据
      */
-    @Tool(description ="获取当前年度的营业数据")
+    @Tool(description ="获取今年的营业数据，从年初到今天")
     public TurnoverReportVO getCurrentYearTurnoverReport() {
         LocalDate now = LocalDate.now();
         LocalDate firstDayOfYear = now.withDayOfYear(1);
@@ -155,5 +134,29 @@ public class ReportTools {
         LocalDate endOfWeek = now.with(DayOfWeek.SUNDAY);
 
         return reportService.getTurnoverReport(startOfWeek, endOfWeek);
+    }
+
+    /**
+     * 获取指定日期范围的营业数据
+     */
+    @Tool(description ="获取指定时间范围内的营业数据，需要提供开始日期和结束日期")
+    public TurnoverReportVO getTurnoverReportByDateRange(
+            @JsonProperty("startDate")
+            @JsonPropertyDescription("开始日期，格式：yyyy-MM-dd，例如：2025-01-01")
+            String startDate,
+
+            @JsonProperty("endDate")
+            @JsonPropertyDescription("结束日期，格式：yyyy-MM-dd，例如：2025-01-31")
+            String endDate) {
+
+        try {
+            log.info("获取指定日期的营业额，开始日期：{}，结束日期：{}", startDate, endDate);
+            LocalDate begin = LocalDate.parse(startDate);
+            LocalDate end = LocalDate.parse(endDate);
+
+            return reportService.getTurnoverReport(begin, end);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("日期格式错误，请使用 yyyy-MM-dd 格式");
+        }
     }
 }
