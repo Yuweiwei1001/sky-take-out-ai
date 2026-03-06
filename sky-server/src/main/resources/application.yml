@@ -25,6 +25,13 @@ spring:
       chat:
         options:
           model: ${sky.dashscope.model}
+  # 重试配置
+  retry:
+    max-attempts: 3
+    backoff:
+      initial-interval: 1000ms
+      multiplier: 2
+      max-interval: 10000ms
 mybatis:
   #mapper配置文件
   mapper-locations: classpath:mapper/*.xml

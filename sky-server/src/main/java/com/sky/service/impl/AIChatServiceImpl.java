@@ -86,8 +86,18 @@ public class AIChatServiceImpl implements AIChatService {
 
         } catch (Exception e) {
             log.error("处理AI聊天请求时发生错误", e);
+            
+            // 判断是否为超时错误
+            String errorMessage = e.getMessage();
+            String userFriendlyMessage;
+            if (errorMessage != null && (errorMessage.contains("timeout") || errorMessage.contains("SocketTimeout"))) {
+                userFriendlyMessage = "AI服务响应超时，请稍后重试。如果问题持续存在，可能是网络不稳定或AI服务繁忙。";
+            } else {
+                userFriendlyMessage = "处理请求时发生错误: " + errorMessage;
+            }
+            
             return AIChatResponseVO.builder()
-                    .content("处理请求时发生错误: " + e.getMessage())
+                    .content(userFriendlyMessage)
                     .conversationId(aiChatMessageDTO.getConversationId())
                     .replyTime(LocalDateTime.now())
                     .build();
