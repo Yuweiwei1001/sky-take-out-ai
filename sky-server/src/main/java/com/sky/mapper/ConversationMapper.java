@@ -19,8 +19,8 @@ public interface ConversationMapper {
     // 创建会话
     void insert(Conversation conversation);
 
-    // todo 更新会话时间
-    @Update("UPDATE conversation SET update_time = #{updateTime} WHERE id = #{id}")
+    // 更新会话时间
+    @Update("UPDATE conversation SET update_time = #{updateTime} WHERE id = #{Id}")
     void updateUpdateTime(String Id, LocalDateTime updateTime);
 
     // 根据id查询会话

@@ -74,4 +74,21 @@ public interface OrderMapper {
     Integer countByDate(LocalDateTime beginTime, LocalDateTime endTime, Integer status);
 
     List<GoodsSalesDTO> getSalesTop10(LocalDateTime beginTime, LocalDateTime endTime);
+
+    /**
+     * 根据状态查询订单列表（不分页）
+     * @param status
+     * @return
+     */
+    @Select("select * from orders where status = #{status} order by order_time desc limit 50")
+    List<Orders> getListByStatus(Integer status);
+
+    /**
+     * 根据时间范围查询订单列表
+     * @param beginTime
+     * @param endTime
+     * @return
+     */
+    @Select("select * from orders where order_time >= #{beginTime} and order_time <= #{endTime} order by order_time desc limit 50")
+    List<Orders> getListByTimeRange(LocalDateTime beginTime, LocalDateTime endTime);
 }
