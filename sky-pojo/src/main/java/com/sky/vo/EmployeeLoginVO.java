@@ -25,7 +25,13 @@ public class EmployeeLoginVO implements Serializable {
     @ApiModelProperty("姓名")
     private String name;
 
-    @ApiModelProperty("jwt令牌")
+    @ApiModelProperty("访问令牌(Access Token)")
     private String token;
+
+    @ApiModelProperty("刷新令牌(Refresh Token)")
+    private String refreshToken;
+
+    @ApiModelProperty("访问令牌过期时间(秒)")
+    private Long expiresIn;
 
 }

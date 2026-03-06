@@ -17,6 +17,13 @@ public class JwtProperties {
     private String adminTokenName;
 
     /**
+     * 管理端 Refresh Token 配置
+     */
+    private String adminRefreshSecretKey;
+    private long adminRefreshTtl;
+    private String adminRefreshTokenName;
+
+    /**
      * 用户端微信用户生成jwt令牌相关配置
      */
     private String userSecretKey;

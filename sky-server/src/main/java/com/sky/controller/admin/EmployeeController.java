@@ -9,10 +9,12 @@ import com.sky.properties.JwtProperties;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.EmployeeService;
+import com.sky.service.TokenService;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +34,8 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
     @Autowired
+    private TokenService tokenService;
+    @Autowired
     private JwtProperties jwtProperties;
 
     /**
@@ -47,19 +51,20 @@ public class EmployeeController {
 
         Employee employee = employeeService.login(employeeLoginDTO);
 
-        //登录成功后，生成jwt令牌
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
-        String token = JwtUtil.createJWT(
-                jwtProperties.getAdminSecretKey(),
-                jwtProperties.getAdminTtl(),
-                claims);
+        // 登录成功后，生成双token
+        // 1. 生成 Access Token（短期有效）
+        String accessToken = tokenService.generateAccessToken(employee.getId());
+
+        // 2. 生成 Refresh Token（长期有效，存储在Redis中）
+        String refreshToken = tokenService.generateRefreshToken(employee.getId());
 
         EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
                 .id(employee.getId())
                 .userName(employee.getUsername())
                 .name(employee.getName())
-                .token(token)
+                .token(accessToken)
+                .refreshToken(refreshToken)
+                .expiresIn(jwtProperties.getAdminTtl() / 1000) // 转换为秒
                 .build();
 
         return Result.success(employeeLoginVO);
@@ -67,12 +72,19 @@ public class EmployeeController {
 
     /**
      * 退出
+     * 吊销当前用户的所有 Refresh Token
      *
      * @return
      */
     @PostMapping("/logout")
     @ApiOperation("员工退出")
     public Result<String> logout() {
+        // 从 BaseContext 获取当前登录员工ID，吊销其所有 Refresh Token
+        Long empId = com.sky.context.BaseContext.getCurrentId();
+        if (empId != null) {
+            tokenService.revokeRefreshToken(empId);
+            log.info("员工退出，吊销所有Token，员工ID：{}", empId);
+        }
         return Result.success();
     }
 

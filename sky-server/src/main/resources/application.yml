@@ -43,21 +43,25 @@ logging:
 
 sky:
   jwt:
-    # 设置jwt签名加密时使用的秘钥
+    # 管理端 Access Token 配置（短期有效，用于日常请求）
     admin-secret-key: your-very-long-secret-key-that-is-at-least-32-bytes!
-    # 设置jwt过期时间
-    admin-ttl: 7200000
-    # 设置前端传递过来的令牌名称
+    admin-ttl: 1800000              # 30分钟 = 30 * 60 * 1000
     admin-token-name: token
 
+    # 管理端 Refresh Token 配置（长期有效，用于刷新 Access Token）
+    admin-refresh-secret-key: your-refresh-secret-key-that-is-at-least-32-by!
+    admin-refresh-ttl: 604800000    # 7天 = 7 * 24 * 60 * 60 * 1000 = 604800000
+    admin-refresh-token-name: refresh-token
+
+    # 用户端单token配置（保持现状）
     user-secret-key: your-very-long-secret-key-that-is-at-least-32-bytes!
     user-ttl: 7200000
     user-token-name: authentication
-  alioss:
-    access-key-id: ${sky.alioss.access-key-id}
-    access-key-secret: ${sky.alioss.access-key-secret}
-    bucket-name: ${sky.alioss.bucket-name}
-    endpoint: ${sky.alioss.endpoint}
+  minio:
+    endpoint: ${sky.minio.endpoint}
+    access-key: ${sky.minio.access-key}
+    secret-key: ${sky.minio.secret-key}
+    bucket-name: ${sky.minio.bucket-name}
   wechat:
     appid: ${sky.wechat.appid}
     secret: ${sky.wechat.secret}
