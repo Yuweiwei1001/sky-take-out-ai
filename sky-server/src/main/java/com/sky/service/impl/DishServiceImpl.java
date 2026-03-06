@@ -61,7 +61,15 @@ public class DishServiceImpl implements DishService {
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(),dishPageQueryDTO.getPageSize());
         Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
-        return new PageResult(page.getTotal(),page.getResult());
+
+        // 为每个菜品查询口味数据
+        List<DishVO> dishVOList = page.getResult();
+        for (DishVO dishVO : dishVOList) {
+            List<DishFlavor> flavors = dishFlavorMapper.getByDishId(dishVO.getId());
+            dishVO.setFlavors(flavors);
+        }
+
+        return new PageResult(page.getTotal(), dishVOList);
     }
 
     @Transactional
@@ -125,9 +133,14 @@ public class DishServiceImpl implements DishService {
     public List<Dish> list(Long categoryId) {
         Dish dish = Dish.builder()
                 .categoryId(categoryId)
-                .status(StatusConstant.ENABLE)
+                .status(StatusConstant.ENABLE)  // 只查询启售的菜品
                 .build();
         return dishMapper.list(dish);
+    }
+
+    @Override
+    public List<DishVO> listAllWithCategory() {
+        return dishMapper.listAllWithCategory();
     }
 
     /**

@@ -58,4 +58,11 @@
         </where>
         order by create_time desc
     </select>
+
+    <select id="listAllWithCategory" resultType="com.sky.vo.DishVO">
+        select d.*, c.name as categoryName
+        from dish d left join category c on d.category_id = c.id
+        where d.status = 1
+        order by d.category_id, d.create_time desc
+    </select>
 </mapper>

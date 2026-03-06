@@ -20,6 +20,7 @@ import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import com.sky.websocket.WebSocketServer;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
  * @description
  * @createTime 2025/3/3 15:41
  */
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
 
@@ -58,8 +60,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private WeChatPayUtil weChatPayUtil;
-
-    private Orders orders;
 
     @Autowired
     private WebSocketServer webSocketServer;
@@ -94,7 +94,6 @@ public class OrderServiceImpl implements OrderService {
         orders.setPhone(addressBook.getPhone());
         orders.setConsignee(addressBook.getConsignee());
         orders.setUserId(userId);
-        this.orders = orders;
 
         orderMapper.insert(orders);
 
@@ -126,6 +125,11 @@ public class OrderServiceImpl implements OrderService {
      * @return
      */
     public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO) throws Exception {
+        Orders ordersDB = orderMapper.getByNumber(ordersPaymentDTO.getOrderNumber());
+        if (ordersDB == null) {
+            throw new OrderBusinessException(MessageConstant.ORDER_NOT_FOUND);
+        }
+
         // 当前登录用户id
         Long userId = BaseContext.getCurrentId();
         User user = userMapper.getById(userId);
@@ -145,13 +149,13 @@ public class OrderServiceImpl implements OrderService {
         Integer OrderPaidStatus = Orders.PAID;//支付状态，已支付
         Integer OrderStatus = Orders.TO_BE_CONFIRMED;  //订单状态，待接单
         LocalDateTime check_out_time = LocalDateTime.now();//更新支付时间
-        orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, this.orders.getId());
+        orderMapper.updateStatus(OrderStatus, OrderPaidStatus, check_out_time, ordersDB.getId());
 
         //通过websockt向客户端发送来单消息，json格式{type,orderId,content}
         Map<String,Object> map = new HashMap<>();
         map.put("type",1);//1，代表来单提醒 2，代表催单提醒
-        map.put("orderId",this.orders.getId());
-        map.put("content","订单号："+ this.orders.getNumber());
+        map.put("orderId",ordersDB.getId());
+        map.put("content","订单号：" + ordersDB.getNumber());
         webSocketServer.sendToAllClient(JSON.toJSONString(map));
         return vo;
     }
@@ -179,26 +183,31 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public PageResult pageQuery4User(OrdersPageQueryDTO ordersPageQueryDTO) {
-        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        if (ordersPageQueryDTO.getPage() <= 0) {
+            ordersPageQueryDTO.setPage(1);
+        }
+        if (ordersPageQueryDTO.getPageSize() <= 0) {
+            ordersPageQueryDTO.setPageSize(10);
+        }
         ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
         //查询订单
         Page<Orders> page = orderMapper.pageQuery(ordersPageQueryDTO);
 
         //查询订单明细,并封装入OrderVO
         List<OrderVO> list = new ArrayList<>();
-        if (page != null && page.getTotal() > 0) {
-            for (Orders orders : page) {
-                //根据订单id查询订单明细
-                Long orderId = orders.getId();
-                List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orderId);
-                //将订单明细封装入OrderVO
-                OrderVO orderVO = new OrderVO();
-                BeanUtils.copyProperties(orders, orderVO);
-                orderVO.setOrderDetailList(orderDetailList);
-                //将订单VO封装入集合
-                list.add(orderVO);
-            }
+        List<Orders> ordersList = page.getResult();
+        for (Orders orders : ordersList) {
+            //根据订单id查询订单明细
+            Long orderId = orders.getId();
+            List<OrderDetail> orderDetailList = orderDetailMapper.getByOrderId(orderId);
+            //将订单明细封装入OrderVO
+            OrderVO orderVO = new OrderVO();
+            BeanUtils.copyProperties(orders, orderVO);
+            orderVO.setOrderDetailList(orderDetailList);
+            //将订单VO封装入集合
+            list.add(orderVO);
         }
+        log.info("订单列表：{}", list);
         return new PageResult(page.getTotal(), list);
     }
 

@@ -43,4 +43,10 @@ public interface DishService {
      * @return
      */
     List<DishVO> listWithFlavor(Dish dish);
+
+    /**
+     * 查询所有启售的菜品（带分类信息，用于套餐选择）
+     * @return
+     */
+    List<DishVO> listAllWithCategory();
 }

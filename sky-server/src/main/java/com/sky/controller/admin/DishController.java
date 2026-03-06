@@ -98,6 +98,13 @@ public class DishController {
         return Result.success(list);
     }
 
+    @GetMapping("/listAll")
+    @ApiOperation("查询所有启售的菜品（用于套餐选择）")
+    public Result<List<DishVO>> listAll(){
+        List<DishVO> list = dishService.listAllWithCategory();
+        return Result.success(list);
+    }
+
     private void clearCache(String pattern){
         Set keys = redisTemplate.keys(pattern);
         redisTemplate.delete(keys);

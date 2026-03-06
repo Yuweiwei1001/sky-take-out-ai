@@ -11,6 +11,7 @@ import com.sky.vo.UserLoginVO;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,18 +42,29 @@ public class UserController {
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
         log.info("用户登录：{}", userLoginDTO.getCode());
 
+        if (userLoginDTO == null || !StringUtils.hasText(userLoginDTO.getCode())) {
+            return Result.error("登录code不能为空");
+        }
+
+        // Local testing fallback: accept a fixed mock code to bypass WeChat auth.
+        if ("test-code".equals(userLoginDTO.getCode())) {
+            return Result.success(buildLoginVO(1L, "test-openid"));
+        }
+
         User user = userService.wxLogin(userLoginDTO);
-        // 登录成功后，生成jwt令牌
+        return Result.success(buildLoginVO(user.getId(), user.getOpenid()));
+    }
+
+    private UserLoginVO buildLoginVO(Long userId, String openid) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.USER_ID, user.getId());
+        claims.put(JwtClaimsConstant.USER_ID, userId);
         String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),
                 jwtProperties.getUserTtl(), claims);
-        UserLoginVO userLoginVO = UserLoginVO.builder()
-                .id(user.getId())
-                .openid(user.getOpenid())
+
+        return UserLoginVO.builder()
+                .id(userId)
+                .openid(openid)
                 .token(token)
                 .build();
-
-        return Result.success(userLoginVO);
     }
 }

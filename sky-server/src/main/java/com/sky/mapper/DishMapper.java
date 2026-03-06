@@ -43,6 +43,12 @@ public interface DishMapper {
 
     List<Dish> list(Dish dish);
 
+    /**
+     * 查询所有启售的菜品（带分类信息，用于套餐选择）
+     * @return
+     */
+    List<DishVO> listAllWithCategory();
+
     @Select("select count(id) from dish where status = #{status}")
     Integer countByStatus(int status);
 }
