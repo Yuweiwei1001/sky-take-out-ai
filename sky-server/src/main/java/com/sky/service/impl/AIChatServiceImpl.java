@@ -13,7 +13,6 @@ import com.sky.vo.AIChatResponseVO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -21,7 +20,6 @@ import reactor.core.publisher.Sinks;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * AI对话服务实现类（基于 ReactAgent）
@@ -36,12 +34,6 @@ public class AIChatServiceImpl implements AIChatService {
     private final ReactAgent restaurantAssistant;
     private final ConversationMapper conversationMapper;
     private final ConversationMessageMapper conversationMessageMapper;
-    private final RedisTemplate<String, Object> redisTemplate;
-
-    // Redis缓存前缀
-    private static final String CONVERSATION_CACHE_PREFIX = "ai:conversation:";
-    private static final String MESSAGES_CACHE_PREFIX = "ai:messages:";
-    private static final long CACHE_EXPIRE_DAYS = 7;
 
     @Override
     @Transactional
@@ -180,28 +172,15 @@ public class AIChatServiceImpl implements AIChatService {
 
             conversationMapper.insert(conversation);
 
-            // 缓存会话
-            String cacheKey = CONVERSATION_CACHE_PREFIX + newId;
-            redisTemplate.opsForValue().set(cacheKey, conversation, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-
             log.info("创建新会话: {}", newId);
             return newId;
         }
 
-        // 验证会话是否存在
-        String cacheKey = CONVERSATION_CACHE_PREFIX + conversationId;
-        Conversation cachedConversation = (Conversation) redisTemplate.opsForValue().get(cacheKey);
-
-        if (cachedConversation == null) {
-            // 从数据库查询
-            Conversation dbConversation = conversationMapper.getById(conversationId);
-            if (dbConversation != null && dbConversation.getStatus() == 1) {
-                // 缓存会话
-                redisTemplate.opsForValue().set(cacheKey, dbConversation, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-            } else {
-                // 会话不存在或已删除，创建新会话
-                return getOrCreateConversation(null, firstMessage);
-            }
+        // 验证会话是否存在（直接从数据库查询）
+        Conversation dbConversation = conversationMapper.getById(conversationId);
+        if (dbConversation == null || dbConversation.getStatus() != 1) {
+            // 会话不存在或已删除，创建新会话
+            return getOrCreateConversation(null, firstMessage);
         }
 
         return conversationId;
@@ -220,17 +199,6 @@ public class AIChatServiceImpl implements AIChatService {
                 .build();
 
         conversationMessageMapper.insert(message);
-
-        // 2. 更新缓存
-        String cacheKey = MESSAGES_CACHE_PREFIX + conversationId;
-        List<ConversationMessage> cachedMessages = (List<ConversationMessage>) redisTemplate.opsForValue().get(cacheKey);
-
-        if (cachedMessages == null) {
-            cachedMessages = new ArrayList<>();
-        }
-
-        cachedMessages.add(message);
-        redisTemplate.opsForValue().set(cacheKey, cachedMessages, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
     }
 
     /**
@@ -239,13 +207,5 @@ public class AIChatServiceImpl implements AIChatService {
     private void updateConversationTime(String conversationId) {
         LocalDateTime now = LocalDateTime.now();
         conversationMapper.updateUpdateTime(conversationId, now);
-
-        // 更新缓存
-        String cacheKey = CONVERSATION_CACHE_PREFIX + conversationId;
-        Conversation conversation = (Conversation) redisTemplate.opsForValue().get(cacheKey);
-        if (conversation != null) {
-            conversation.setUpdateTime(now);
-            redisTemplate.opsForValue().set(cacheKey, conversation, CACHE_EXPIRE_DAYS, TimeUnit.DAYS);
-        }
     }
 }

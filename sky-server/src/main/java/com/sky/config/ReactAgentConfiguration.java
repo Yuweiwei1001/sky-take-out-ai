@@ -1,7 +1,7 @@
 package com.sky.config;
 
 import com.alibaba.cloud.ai.graph.agent.ReactAgent;
-import com.alibaba.cloud.ai.graph.checkpoint.savers.MemorySaver;
+import com.alibaba.cloud.ai.graph.checkpoint.savers.mysql.MysqlSaver;
 import com.sky.rag.RAGMessagesHook;
 import com.sky.tools.DateTimeTools;
 import com.sky.tools.OrderTools;
@@ -14,6 +14,8 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+
+import javax.sql.DataSource;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,7 +42,8 @@ public class ReactAgentConfiguration {
             ReportTools reportTools,
             DateTimeTools dateTimeTools,
             OrderTools orderTools,
-            VectorStore vectorStore) {
+            VectorStore vectorStore,
+            DataSource dataSource) {
 
         // 动态生成系统提示词
         String todayDate = LocalDate.now().toString();
@@ -118,13 +121,20 @@ public class ReactAgentConfiguration {
         RAGMessagesHook ragHook = new RAGMessagesHook(vectorStore);
         log.info("RAG 功能已启用，向量存储已配置");
 
+        // 创建 MySQLSaver 实现短期记忆持久化
+        // 使用默认 CreateOption.CREATE_IF_NOT_EXISTS
+        MysqlSaver mysqlSaver = MysqlSaver.builder()
+                .dataSource(dataSource)
+                .build();
+        log.info("MySQLSaver 已配置，短期记忆将持久化到数据库");
+
         // 创建 ReactAgent
         return ReactAgent.builder()
                 .name("restaurant-assistant")
                 .model(chatModel)
                 .tools(allTools.toArray(new ToolCallback[0]))
                 .systemPrompt(systemPrompt)
-                .saver(new MemorySaver())
+                .saver(mysqlSaver)
                 .hooks(ragHook)
                 .build();
     }
