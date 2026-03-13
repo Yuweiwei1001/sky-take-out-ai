@@ -1,4 +1,4 @@
-#已废弃，移步https://gitee.com/yu-wei-wei/wuli-take-out-ai-backend.git
+###已废弃，移步https://gitee.com/yu-wei-wei/wuli-take-out-ai-backend.git
 
 ### 后端项目所需环境
 Java17 + Springboot3.3.8 + redis 3.2.1+ mysql 8.0
