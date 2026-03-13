@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sky.mapper.ConversationMapper">
+
+    <insert id="insert">
+        insert into conversation (id, user_id, title, create_time, update_time, status)
+        VALUES (#{id}, #{userId}, #{title}, #{createTime}, #{updateTime}, #{status})
+    </insert>
+
+</mapper>

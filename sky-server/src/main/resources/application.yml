@@ -1,0 +1,80 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  datasource:
+    driver-class-name: ${sky.datasource.driver-class-name}
+    url: jdbc:mysql://${sky.datasource.host}:${sky.datasource.port}/${sky.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: ${sky.datasource.username}
+    password: ${sky.datasource.password}
+    type: com.alibaba.druid.pool.DruidDataSource
+  data:
+    redis:
+      host: ${sky.redis.host}
+      port: ${sky.redis.port}
+      database: ${sky.redis.database}
+      #    password: ${sky.redis.password}
+      timeout: ${sky.redis.timeout}
+  ai:
+    dashscope:
+      api-key: ${sky.dashscope.api-key}
+      chat:
+        options:
+          model: ${sky.dashscope.model}
+    # 重试配置
+    retry:
+      max-attempts: 2
+      backoff:
+        initial-interval: 1000ms
+        multiplier: 2
+        max-interval: 10000ms
+mybatis:
+  #mapper配置文件
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.sky.entity
+  configuration:
+    #开启驼峰命名
+    map-underscore-to-camel-case: true
+
+logging:
+  level:
+    com:
+      sky:
+        mapper: debug
+        service: info
+        controller: info
+
+sky:
+  jwt:
+    # 管理端 Access Token 配置（短期有效，用于日常请求）
+    admin-secret-key: your-very-long-secret-key-that-is-at-least-32-bytes!
+    admin-ttl: 1800000              # 30分钟 = 30 * 60 * 1000
+    admin-token-name: token
+
+    # 管理端 Refresh Token 配置（长期有效，用于刷新 Access Token）
+    admin-refresh-secret-key: your-refresh-secret-key-that-is-at-least-32-by!
+    admin-refresh-ttl: 604800000    # 7天 = 7 * 24 * 60 * 60 * 1000 = 604800000
+    admin-refresh-token-name: refresh-token
+
+    # 用户端单token配置（保持现状）
+    user-secret-key: your-very-long-secret-key-that-is-at-least-32-bytes!
+    user-ttl: 7200000
+    user-token-name: authentication
+  minio:
+    endpoint: ${sky.minio.endpoint}
+    access-key: ${sky.minio.access-key}
+    secret-key: ${sky.minio.secret-key}
+    bucket-name: ${sky.minio.bucket-name}
+  wechat:
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}
+#    mchid: ${sky.wechat.mchid}
+#    mchSerialNo: ${sky.wechat.mchid}
+#    privateKeyFilePath: ${sky.wechat.privateKeyFilePath}
+#    apiV3Key: ${sky.wechat.apiV3Key}
+#    weChatPayCertFilePath: ${sky.wechat.weChatPayCertFilePath}
+#    notifyUrl: ${sky.wechat.notifyUrl}
